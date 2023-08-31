@@ -66,7 +66,7 @@ def get_pdb_features(ids, sets="refined"):
 
     # 逐一进行体素化，并使用tqdm生成进度条。
     for pdbid in tqdm(ids):
-        print('PDB: ', pdbid, ' ', 'has began')
+        print('\n', 'PDB: ', pdbid, ' ', 'has began')
 
         # 根据PDBid获得文件路径
         protein_file = os.path.join(pdbbind_dir, pdbid, pdbid + "_protein.pdbqt")
