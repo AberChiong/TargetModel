@@ -21,7 +21,9 @@ import h5py
 # 设置路径
 data_dir = ".\\data"
 pdbbind_dir = os.path.join(data_dir, "refined-set-2016\\")
-pdbbind_dataset = datasets.pdbbind(home=pdbbind_dir, default_set='refined', version=2016)
+pdbbind_2016 = datasets.pdbbind(home=pdbbind_dir, default_set='refined', version=2016)
+pdbbind_dir = os.path.join(data_dir, "refined-set-2020\\")
+pdbbind_2020 = datasets.pdbbind(home=pdbbind_dir, default_set='refined', version=2020)
 
 def get_pdb_complex_feature(pro_file, lig_file):
     """ 返回组合了protein和ligand的element feature体素化结果 """
@@ -93,7 +95,7 @@ def get_pdb_features(ids, sets="refined"):
     
     # 根据PDBid返回其对应的标签值（Ki, Kd, IC50）
     data_x = np.array(pdb_features, dtype=np.float32)
-    data_y = np.array([pdbbind_dataset.sets[sets][_id] for _id in pdb_ids], dtype=np.float32)
+    data_y = np.array([pdbbind_2020.sets[sets][_id] for _id in pdb_ids], dtype=np.float32)
 
     return data_x, data_y
 
@@ -101,15 +103,15 @@ def get_features():
     """ 返回数据库中的体素化结果x 并对应标签y值 """ 
 
     # 核心数据集选择
-    core_ids = list(pdbbind_dataset.sets['core'].keys())
+    core_ids = list(pdbbind_2016.sets['core'].keys())
     # 精炼数据集选择
-    refined_ids = list(pdbbind_dataset.sets['refined'].keys()) 
+    refined_ids = list(pdbbind_2020.sets['refined'].keys()) 
     # 将精炼数据集和核心数据集独立
     refined_ids = [i for i in refined_ids if i not in core_ids]
     
     # 执行批量体素化 
     print("Extracting features for the core set")
-    core_x, core_y = get_pdb_features(core_ids, sets="core")
+    core_x, core_y = get_pdb_features(core_ids)
     print("Extracting features for the refined set")
     refined_x, refined_y = get_pdb_features(refined_ids)    
     
@@ -128,8 +130,8 @@ def main():
     test_xp, test_xl = test_x[..., 0:8], test_x[..., 8:]
 
     # 保存
-    print("Saving the data in pretest1.h5")
-    h5f = h5py.File(os.path.join(data_dir, "pretest.h5"), 'w')
+    print("Saving the data in PDBbind2020.h5")
+    h5f = h5py.File(os.path.join(data_dir, "PDBbind2020.h5"), 'w')
     h5f.create_dataset('train_xp', data=train_xp)
     h5f.create_dataset('train_xl', data=train_xl)
     h5f.create_dataset('train_y', data=train_y)
@@ -142,3 +144,4 @@ def main():
     h5f.close()
 
 if __name__=="__main__":main()
+
